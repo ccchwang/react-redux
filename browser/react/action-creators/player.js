@@ -1,6 +1,7 @@
 import {SET_CURRENT_SONG, SET_LIST, START_PLAYING, STOP_PLAYING} from '../constants.js'
 import axios from 'axios';
 import store from '../store.js'
+import AUDIO from '../audio';
 
 //SYNCHRONOUS ACTION OBJECT CREATORS
 export const setCurrentSong = function (song){
@@ -26,6 +27,7 @@ export const startPlaying = function (){
 export const stopPlaying = function (){
   return {
     type: STOP_PLAYING
+  }
 }
 
 //ASYNC ACTION FN CREATORS
@@ -34,7 +36,6 @@ export const play = function() {
       AUDIO.play();
        dispatch(startPlaying())
     }
-  }
 }
 
 export const pause = function() {
@@ -42,7 +43,6 @@ export const pause = function() {
       AUDIO.pause();
        dispatch(stopPlaying())
     }
-  }
 }
 
 export const load = function (currentSong, currentSongList) {
@@ -62,7 +62,14 @@ export const startSong = function (song, list) {
     }
 }
 
-export const toggleOne = function (selectedSong, selectedSonglist) {
+export const toggle = function (song, list) {
+  return function(dispatch, getState) {
+      if (getState().player.isPlaying) dispatch(pause());
+    else dispatch(play());
+    }
+}
+
+export const toggleOne = function (selectedSong, selectedSongList) {
   return function(dispatch, getState) {
       if (selectedSong.id !== getState().player.currentSong.id)
         dispatch(startSong(selectedSong, selectedSongList));
@@ -71,12 +78,18 @@ export const toggleOne = function (selectedSong, selectedSonglist) {
 }
 
 
-export const toggle = function (song, list) {
-  return function(dispatch, getState) {
-      if (getState().player.isPlaying) dispatch(pause());
-    else dispatch(play());
-    }
-}
+
+
+export const next = () =>
+  (dispatch, getState) => {
+    dispatch(startSong(...skip(1, getState().player)));
+};
+
+export const prev = () =>
+  (dispatch, getState) => {
+    dispatch(startSong(...skip(-1, getState().player)));
+};
+
 
 //sync action creator to create start_playing, stop_playing action objs
 
