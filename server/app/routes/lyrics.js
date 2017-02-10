@@ -1,8 +1,6 @@
-const express = require('express');
-const router = new express.Router();
+
 const request = require('request-promise');
 const parser = require('xml2json');
-module.exports = router;
 const express = require('express');
 const getLyrics = require('lyric-get').get;
 const router = new express.Router();
