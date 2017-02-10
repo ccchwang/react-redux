@@ -64,7 +64,9 @@ export const startSong = function (song, list) {
 
 export const toggle = function (song, list) {
   return function(dispatch, getState) {
-      if (getState().player.isPlaying) dispatch(pause());
+      if (getState().player.isPlaying) pause()(dispatch);
+
+  /* calling pause() doesn't work because that just returns a fn. calling pause()() doesn't work because while that calls the actual pause fn and stops the music, that pause function then tries to call dispatch(stopPlaying()) => dispatch wasn't passed in to that function because it wasn't called by store.dispatch. when an action fn calls another action fn, the 2nd action fn doesn't have dispatch passed it. It's only passed into the originating action fn. You can fix with pause()(dispatch), but that looks weird*/
     else dispatch(play());
     }
 }
