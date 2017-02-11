@@ -12,8 +12,8 @@ class Artist extends React.Component {
 
   render () {
 
-    const artist = this.props.selectedArtist;
-    const albums = artist.albums || [];
+    const artist = this.props.artists.selectedArtist;
+    const artistAlbums = artist.albums || [];
     const songs = artist.songs || [];
     const children = this.props.children;
 
@@ -26,7 +26,7 @@ class Artist extends React.Component {
         </ul>
         {
           children && React.cloneElement(children, Object.assign({}, this.props, {
-            albums: albums,
+            albums: {albums: artistAlbums},
             songs: songs
           }))
         }

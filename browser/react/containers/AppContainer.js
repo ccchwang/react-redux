@@ -6,15 +6,14 @@ import store from '../store.js'
 import initialState from '../initialState';
 import AUDIO from '../audio';
 
-import Albums from '../components/Albums.js';
-import Album from '../components/Album';
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 
-import {play, pause, load, startSong, toggleOne, toggle, next, prev} from '../action-creators/player.js'
+import {play, pause, load, startSong, toggleOne, toggle, next, prev} from '../action-creators/player.js';
+import {selectAlbum, loadAlbums} from '../action-creators/albums.js';
+import {selectArtist, setArtists} from '../action-creators/artists.js';
+import {loadSongs} from '../action-creators/songs.js';
 
-
-import { convertAlbum, convertAlbums, convertSong, skip } from '../utils';
 
 export default class AppContainer extends Component {
 
@@ -55,9 +54,9 @@ export default class AppContainer extends Component {
   }
 
   onLoad (albums, artists, playlists) {
+    store.dispatch(loadAlbums(albums));
+    store.dispatch(setArtists(artists));
     this.setState({
-      albums: convertAlbums(albums),
-      artists: artists,
       playlists: playlists
     });
   }
@@ -87,11 +86,11 @@ export default class AppContainer extends Component {
   }
 
   next () {
-        store.dispatch(next())
+    store.dispatch(next())
   }
 
   prev () {
-        store.dispatch(prev())
+    store.dispatch(prev())
   }
 
   setProgress (progress) {
@@ -99,31 +98,11 @@ export default class AppContainer extends Component {
   }
 
   selectAlbum (albumId) {
-    axios.get(`/api/albums/${albumId}`)
-      .then(res => res.data)
-      .then(album => this.setState({
-        selectedAlbum: convertAlbum(album)
-      }));
+    store.dispatch(selectAlbum(albumId))
   }
 
   selectArtist (artistId) {
-    Promise
-      .all([
-        axios.get(`/api/artists/${artistId}`),
-        axios.get(`/api/artists/${artistId}/albums`),
-        axios.get(`/api/artists/${artistId}/songs`)
-      ])
-      .then(res => res.map(r => r.data))
-      .then(data => this.onLoadArtist(...data));
-  }
-
-  onLoadArtist (artist, albums, songs) {
-    songs = songs.map(convertSong);
-    albums = convertAlbums(albums);
-    artist.albums = albums;
-    artist.songs = songs;
-
-    this.setState({ selectedArtist: artist });
+    store.dispatch(selectArtist(artistId))
   }
 
   addPlaylist (playlistName) {
@@ -149,14 +128,8 @@ export default class AppContainer extends Component {
       });
   }
 
-  loadSongs (songs) {
-    axios.get('/api/songs')
-      .then(res => res.data)
-      .then(songs => {
-        this.setState({
-          songs: songs
-        });
-      });
+  loadSongs () {
+    store.dispatch(loadSongs())
   }
 
   addSongToPlaylist (playlistId, songId) {

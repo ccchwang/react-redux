@@ -11,17 +11,19 @@ class Album extends React.Component {
   }
 
   render () {
-    const album = this.props.selectedAlbum;
-    const currentSong = this.props.currentSong;
-    const isPlaying = this.props.isPlaying;
+
+    const album = this.props.albums.selectedAlbum;
+    const currentSong = this.props.player.currentSong;
+    const isPlaying = this.props.player.isPlaying;
     const toggleOne = this.props.toggleOne;
+
 
     return (
       <div className="album">
         <div>
           <h3>{ album.name }</h3>
           <img src={ album.imageUrl } className="img-thumbnail" />
-        </div>
+        </div>}
         <Songs
           songs={album.songs}
           currentSong={currentSong}
